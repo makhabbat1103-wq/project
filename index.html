@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Мир Тенниса</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ====== Base ====== */
+    body{font-family:"Montserrat",sans-serif;margin:0;padding:20px 20px 80px;background:linear-gradient(135deg,#f0f4f8,#e6ebf1);color:#333}
+    h2{text-align:center;margin-bottom:30px;color:#444;font-weight:700}
+    section{background:#fff;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:20px;margin-bottom:30px}
+
+    /* ====== Tabs ====== */
+    .tabs{max-width:1200px;margin:auto;width:100%}
+    .tab-buttons{display:flex;justify-content:center;gap:10px}
+    .tab-buttons button{padding:10px 20px;border:none;border-radius:12px;background:#f0f0f0;cursor:pointer;transition:.3s;font-weight:500}
+    .tab-buttons button.active{background:#2a7ae4;color:#fff;box-shadow:0 4px 10px rgba(42,122,228,.3)}
+    .tab-content{margin-top:20px;display:none}
+    .tab-content.active{display:flex}
+    .tab-text{flex:1}
+    /* no inner gray panels for any tab */
+    .tab-content[data-content]{background:transparent;border:none;box-shadow:none;padding:0;flex-direction:row;gap:20px;justify-content:center;align-items:flex-start}
+
+    /* ====== Tab 1 (Task 1) ====== */
+    #task1{padding:16px;background:#fff;border:1px solid #dce3ec;border-radius:12px}
+    #hello{font-size:20px;font-weight:600;color:#2a7ae4;margin-bottom:10px}
+    #change-style{cursor:pointer;transition:.3s}
+    #change-style:hover{background:#f8f9fa;border-radius:8px;padding:5px}
+    #change-text-btn,#add-element-btn,#delete-element-btn{
+      display:inline-block;padding:12px 26px;font-size:16px;font-weight:600;color:#fff;background:#2A76DB;border:none;border-radius:8px;cursor:pointer;margin:10px 10px 10px 0;transition:.2s
+    }
+    #delete-element-btn{background:#E53935}
+    #change-text-btn:hover,#add-element-btn:hover{background:#1d5bbf;transform:scale(1.05)}
+    #delete-element-btn:hover{background:#c62828;transform:scale(1.05)}
+    #new-element{position:fixed;bottom:0;left:0;width:100%;background:#2a7ae4;color:#fff;text-align:center;padding:12px;font-weight:600;border-radius:12px 12px 0 0;z-index:9999;display:none}
+
+    /* ====== Tab 2 (Cards) ====== */
+    .cards{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+    .card{background:#fff;border-radius:30px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,.08);transition:.2s;cursor:pointer;max-width:300px;text-align:center}
+    .card:hover{transform:translateY(-5px)}
+    .card img{width:100%;height:180px;object-fit:cover;border-radius:20px;margin-bottom:12px}
+    .card .level{display:inline-block;background:#eef3ff;color:#2a7ae4;font-size:13px;font-weight:500;padding:4px 10px;border-radius:8px;margin-bottom:10px}
+
+    /* ====== Tab 3 (Task 2) ====== */
+    #toggle-class{padding:12px 18px;border-radius:10px;border:1px solid #ddd;background:#f9f9f9;font-weight:500;transition:.3s;text-align:center;cursor:pointer}
+    #toggle-class.permanent{outline:2px dashed #9c27b0;outline-offset:3px}
+    #toggle-class.active{background:#2a7ae4;color:#fff;border-color:#2a7ae4;box-shadow:0 4px 12px rgba(42,122,228,.3)}
+    #toggle-class.highlight{border:2px dashed #ff9800;background:#fff4e0;color:#e65100}
+    #toggle-class.bg-changed{background:#4caf50!important;color:#fff!important}
+    #toggle-class:hover{background:#e8f0ff}
+    #class-list-output{margin-top:12px;color:#444;font-weight:500}
+    #last-class-output{margin-top:6px;color:#222;font-weight:600}
+
+    /* ====== Tab 4 (Task 4) ====== */
+    #task4{width:100%}
+    #task4 h1{margin:0 0 12px;font-size:42px;font-weight:700}
+    #task4 .t4-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:0 0 12px}
+    #task4 label{font-size:16px;display:inline-flex;align-items:center;gap:6px}
+    #task4 input[type=number]{width:120px;padding:8px 10px;border:1px solid #cfcfcf;border-radius:8px;font-size:16px}
+    #task4 input[type=color]{inline-size:48px;block-size:36px;padding:0;border:1px solid #cfcfcf;border-radius:8px;background:#fff}
+    #task4 button{padding:8px 14px;border-radius:10px;border:1px solid #cfcfcf;background:#fff;cursor:pointer;font-weight:700;height:36px}
+    #task4 button:hover{background:#f6f6f6}
+    #task4 table{border-collapse:collapse;margin-top:12px}
+    #task4 td{width:32px;height:32px;border:1px solid #d9d9d9;background:#fff;user-select:none;transition:background .1s}
+    #task4 td:hover{outline:2px solid #7aa7ff;outline-offset:-2px}
+    #task4 .stats{margin-top:12px;font-size:16px}
+    #task4 .muted{color:#666;font-size:13px}
+    #task4 .list{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+    #task4 .badge{display:inline-flex;gap:8px;align-items:center;border:1px solid #cfcfcf;border-radius:999px;padding:6px 10px;background:#fff;font-size:13px}
+    #task4 .sw{inline-size:16px;block-size:16px;border-radius:4px;border:1px solid rgba(0,0,0,.15)}
+    /* «Посчитать» и «Очистить» — ниже, с отступом, в одну линию */
+    #task4 .button-group{display:flex;gap:12px;margin-top:8px}
+    #t4-result{display:inline-flex;align-items:center;height:36px;line-height:36px;font-weight:700;color:#2a7ae4;margin-left:12px}
+  </style>
+</head>
+<body>
+
+  <h2>Мир Тенниса</h2>
+
+  <section>
+    <h3>Вкладки</h3>
+    <div class="tabs">
+      <div class="tab-buttons">
+        <button data-tab="1" class="active">Вкладка 1</button>
+        <button data-tab="2">Вкладка 2</button>
+        <button data-tab="3">Вкладка 3</button>
+        <button data-tab="4">Вкладка 4</button>
+      </div>
+
+      <!-- Tab 1 -->
+      <div class="tab-content active" data-content="1">
+        <div class="tab-text">
+          <div id="task1">
+            <h4>Task 1: Работа с элементами</h4>
+            <p id="hello">Привет, мир!</p>
+            <button id="change-text-btn">Изменить текст</button>
+            <button id="add-element-btn">Добавить элемент</button>
+            <button id="delete-element-btn">Удалить элемент</button>
+            <p id="change-style">Это изменяемый абзац (кликни на меня).</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2 -->
+      <div class="tab-content" data-content="2">
+        <div class="tab-text">
+          <div class="cards">
+            <div class="card">
+              <img src="img/tennis1.jpg" alt="Новички" class="card-img">
+              <span class="level">Новички</span>
+              <h4>Базовый курс</h4>
+              <p>Стойки, хваты, подача и приём. Научим правильно двигаться и получать удовольствие от игры.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3 -->
+      <div class="tab-content" data-content="3">
+        <div class="tab-text">
+          <h4>Task 2: Работа с классами</h4>
+          <div id="toggle-class" class="permanent">Кликни, чтобы переключать классы</div>
+          <p id="class-list-output">Классы элемента: </p>
+          <p id="last-class-output">Класс: —</p>
+        </div>
+      </div>
+
+      <!-- Tab 4 -->
+      <div class="tab-content" data-content="4">
+        <div class="tab-text">
+          <div id="task4">
+            <h1>Task 4</h1>
+
+            <div class="t4-row">
+              <label>Строки: <input id="t4-r" type="number" min="1" max="200" value="8"></label>
+              <label>Столбцы: <input id="t4-c" type="number" min="1" max="200" value="7"></label>
+              <button id="t4-mk">Сгенерировать</button>
+
+              <label>Текущий цвет: <input id="t4-pick" type="color" value="#000000"></label>
+              <!-- УДАЛЕНО: Подсчёт цвета (t4-cc) и Сделать текущим (t4-sync) -->
+            </div>
+
+            <!-- Ниже, отдельной строкой -->
+            <div class="button-group">
+              <button id="t4-cnt">Посчитать</button>
+              <button id="t4-clr">Очистить</button>
+              <span id="t4-result"></span>
+            </div>
+
+            <div id="t4-host"></div>
+
+            <div class="stats">
+              Всего: <span id="t4-t">0</span>,
+              окрашено: <span id="t4-p">0</span>,
+              неокрашено: <span id="t4-u">0</span>
+              <div><strong>Использованные цвета:</strong>
+                <div id="t4-used" class="list"><span class="muted">пока нет окрашенных ячеек</span></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- /Tab 4 -->
+    </div>
+  </section>
+
+  <div id="new-element">Я новый элемент</div>
+
+  <script>
+    /* ===================== Tabs switcher ===================== */
+    const tabButtons = document.querySelectorAll('.tab-buttons button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabButtons.forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const id = btn.getAttribute('data-tab');
+        tabButtons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        tabContents.forEach(c=>{
+          c.classList.toggle('active', c.getAttribute('data-content')===id);
+        });
+      });
+    });
+
+    /* ===================== Tab 1 logic ===================== */
+    const helloElem = document.getElementById('hello');
+    const changeBtn = document.getElementById('change-text-btn');
+    const changeStyleP = document.getElementById('change-style');
+    const addElementBtn = document.getElementById('add-element-btn');
+    const deleteElementBtn = document.getElementById('delete-element-btn');
+
+    changeBtn?.addEventListener('click', ()=>{
+      helloElem.textContent = (helloElem.textContent==='Привет, мир!') ? 'Мир Тенниса' : 'Привет, мир!';
+    });
+
+    let isChanged = false;
+    changeStyleP?.addEventListener('click', ()=>{
+      if(!isChanged){
+        changeStyleP.style.color = '#2A76DB';
+        changeStyleP.style.fontSize = '22px';
+        changeStyleP.style.fontWeight = '700';
+      }else{
+        changeStyleP.style.color = '';
+        changeStyleP.style.fontSize = '';
+        changeStyleP.style.fontWeight = '';
+      }
+      isChanged = !isChanged;
+    });
+
+    addElementBtn?.addEventListener('click', ()=>{
+      let el = document.getElementById('new-element');
+      if(!el){
+        el = document.createElement('div');
+        el.id = 'new-element';
+        el.textContent = 'Я новый элемент';
+        document.body.appendChild(el);
+      }
+      el.style.display = 'block';
+    });
+
+    deleteElementBtn?.addEventListener('click', ()=>{
+      const el = document.getElementById('new-element');
+      if(el) el.remove();
+    });
+
+    /* ===================== Tab 3 logic ===================== */
+    const toggleClassElem = document.getElementById('toggle-class');
+    const classListOutput = document.getElementById('class-list-output');
+    const lastClassOutput  = document.getElementById('last-class-output');
+
+    function updateClassList(){
+      if(!toggleClassElem) return;
+      const classes = toggleClassElem.className.trim();
+      classListOutput.textContent = classes ? ('Классы элемента: '+classes) : 'Классы элемента:';
+    }
+
+    let step = 0;
+    toggleClassElem?.addEventListener('click', ()=>{
+      step++;
+      toggleClassElem.classList.remove('active','highlight','bg-changed');
+      const applied = step%3===1 ? 'active' : step%3===2 ? 'highlight' : 'bg-changed';
+      toggleClassElem.classList.add(applied);
+      updateClassList();
+      lastClassOutput.textContent = 'Класс: ' + applied;
+    });
+
+    /* ===================== Tab 4 logic (white=eraser) ===================== */
+    const grid = {
+      host: document.getElementById('t4-host'),
+
+      rowsInput: document.getElementById('t4-r'),
+      colsInput: document.getElementById('t4-c'),
+      generateBtn: document.getElementById('t4-mk'),
+
+      currentColorInput: document.getElementById('t4-pick'),
+
+      countBtn:  document.getElementById('t4-cnt'),
+      clearBtn:  document.getElementById('t4-clr'),
+
+      totalCellsSpan:   document.getElementById('t4-t'),
+      paintedCellsSpan: document.getElementById('t4-p'),
+      unpaintedCellsSpan: document.getElementById('t4-u'),
+
+      usedColorsList: document.getElementById('t4-used'),
+      resultSpan:     document.getElementById('t4-result')
+    };
+
+    /** #abc -> #aabbcc; басқа формат өзгеріссіз қалады */
+    function normalizeColor(hex) {
+      const h = String(hex).trim().toLowerCase();
+      if (/^#[0-9a-f]{3}$/.test(h)) {
+        const tripled = [...h.slice(1)].map(c => c + c).join('');
+        return '#' + tripled;
+      }
+      return h;
+    }
+
+    const ERASE_COLOR = '#ffffff'; // белый — «стереть»
+
+    /** Жаңа кесте құру */
+    function generateGrid(rows, cols) {
+      // 1..200 диапазонын ұстау
+      const r = Math.max(1, Math.min(200, parseInt(rows) || 1));
+      const c = Math.max(1, Math.min(200, parseInt(cols) || 1));
+
+      const table = document.createElement('table');
+      const tbody = document.createElement('tbody');
+
+      for (let i = 0; i < r; i++) {
+        const tr = document.createElement('tr');
+
+        for (let j = 0; j < c; j++) {
+          const td = document.createElement('td');
+          // Ұяшыққа басқанда — ағымдағы түспен бояу (ақ болса — өшіру)
+          td.addEventListener('click', () => paintCell(td, grid.currentColorInput.value));
+          tr.appendChild(td);
+        }
+
+        tbody.appendChild(tr);
+      }
+
+      table.appendChild(tbody);
+      grid.host.innerHTML = '';           // ескі кестені тазалау
+      grid.host.appendChild(table);       // жаңа кестені қою
+      updateStats();                      // статистиканы жаңарту
+    }
+
+    /** Ұяшықты бояу/өшіру */
+    function paintCell(td, color) {
+      const hex = normalizeColor(color);
+      const current = (td.dataset.color || '').toLowerCase();
+
+      if (hex === ERASE_COLOR) {
+        // Белый стирает (делает ячейку неокрашенной)
+        td.style.background = '#fff';
+        td.dataset.color = '';
+      } else if (current === hex) {
+        // Повторный клик тем же цветом — снять окраску
+        td.style.background = '#fff';
+        td.dataset.color = '';
+      } else {
+        // Окрасить новым цветом
+        td.style.background = hex;
+        td.dataset.color = hex;
+      }
+
+      updateStats();
+    }
+
+    /** Подсчёт: для белого — неокрашенные, иначе — по выбранному цвету */
+    function countColor(color) {
+      const hex = normalizeColor(color);
+
+      if (hex === ERASE_COLOR) {
+        let empty = 0;
+        grid.host.querySelectorAll('td').forEach(td => {
+          if (!td.dataset.color) empty++;
+        });
+        return empty;
+      }
+
+      let count = 0;
+      grid.host.querySelectorAll('td').forEach(td => {
+        if ((td.dataset.color || '').toLowerCase() === hex) count++;
+      });
+      return count;
+    }
+
+    /** Қолданылған түстер тізімін шығару */
+    function renderUsedColors(colorMap) {
+      grid.usedColorsList.innerHTML = '';
+      const colors = Object.keys(colorMap);
+
+      if (!colors.length) {
+        grid.usedColorsList.innerHTML = '<span class="muted">пока нет окрашенных ячеек</span>';
+        return;
+      }
+
+      colors.forEach(hex => {
+        const badge = document.createElement('div');
+        badge.className = 'badge';
+        badge.innerHTML = `
+          <span class="sw" style="background:${hex}"></span>
+          <span><code>${hex.toUpperCase()}</code> — <strong>${colorMap[hex]}</strong></span>
+        `;
+        grid.usedColorsList.appendChild(badge);
+      });
+    }
+
+    /** Барлық сандарды жаңарту */
+    function updateStats() {
+      const cells = [...grid.host.querySelectorAll('td')];
+      grid.totalCellsSpan.textContent = cells.length;
+
+      const colorMap = {};
+      let painted = 0;
+
+      cells.forEach(td => {
+        const col = td.dataset.color || '';
+        if (col) {
+          painted++;
+          colorMap[col] = (colorMap[col] || 0) + 1;
+        }
+      });
+
+      const unpainted = cells.length - painted;
+      grid.paintedCellsSpan.textContent = painted;
+      grid.unpaintedCellsSpan.textContent = unpainted;
+
+      renderUsedColors(colorMap);
+    }
+
+    /* ======== БАСҚАРУ БАТЫРМАЛАРЫ ======== */
+
+    // Кесте генерациясы
+    grid.generateBtn.addEventListener('click', () => {
+      generateGrid(grid.rowsInput.value, grid.colsInput.value);
+    });
+
+    // Тазалау
+    grid.clearBtn.addEventListener('click', () => {
+      grid.host.querySelectorAll('td').forEach(td => {
+        td.dataset.color = '';
+        td.style.background = '#fff';
+      });
+      updateStats();
+      grid.resultSpan.textContent = '';
+    });
+
+    // Санақ (Посчитать) — считает по текущему цвету; для белого — «неокрашено»
+    grid.countBtn.addEventListener('click', () => {
+      const n = countColor(grid.currentColorInput.value);
+      grid.resultSpan.textContent = `Найдено: ${n}`;
+    });
+
+    // Алғашқы кесте
+    generateGrid(grid.rowsInput.value, grid.colsInput.value);
+  </script>
+</body>
+</html>
